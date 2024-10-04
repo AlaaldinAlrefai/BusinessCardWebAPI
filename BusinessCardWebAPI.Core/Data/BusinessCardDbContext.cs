@@ -15,5 +15,13 @@ namespace BusinessCardWebAPI.Core.Data
         }
 
         public DbSet<Users> Users { get; set; }
+        public DbSet<BusinessCards> BusinessCards { get; set; }
+        public DbSet<ImportLogs> ImportLogs { get; set; }
+        public DbSet<ExportLogs> ExportLogs { get; set; }
+
+
+       
+
+
     }
 }
