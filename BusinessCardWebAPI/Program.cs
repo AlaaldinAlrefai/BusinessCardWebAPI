@@ -1,5 +1,7 @@
 
+using BusinessCardWebAPI.Core.Data;
 using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
 
 namespace BusinessCardWebAPI
 {
@@ -33,9 +35,14 @@ namespace BusinessCardWebAPI
             }
 
 
-        // Add services to the container.
+            // Add services to the container.
 
-        builder.Services.AddControllers();
+            builder.Services.AddDbContext<BusinessCardDbContext>(option =>
+            {
+                option.UseSqlServer(ConnectionString);
+            });
+
+            builder.Services.AddControllers();
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
