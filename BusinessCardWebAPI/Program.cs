@@ -1,5 +1,10 @@
 
+using BusinessCardWebAPI.Configrations;
 using BusinessCardWebAPI.Core.Data;
+using BusinessCardWebAPI.Core.IReposetory;
+using BusinessCardWebAPI.Core.IServieces;
+using BusinessCardWebAPI.Infra.Reposetory;
+using BusinessCardWebAPI.Infra.Servieces;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 
@@ -47,6 +52,11 @@ namespace BusinessCardWebAPI
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
+
+            builder.Services.AddAutoMapper(typeof(MapperConfig));
+            builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
+            builder.Services.AddScoped<IBusinessCardsReposetory, BusinessCardsReposetory>();
+            builder.Services.AddScoped<IBusinessCardsServieces, BusinessCardsServieces>();
 
             var app = builder.Build();
 
