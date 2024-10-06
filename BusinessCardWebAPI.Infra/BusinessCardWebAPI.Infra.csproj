@@ -20,8 +20,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Servieces\" />
-    <Folder Include="Reposetory\" />
+    <ProjectReference Include="..\BusinessCardWebAPI.Core\BusinessCardWebAPI.Core.csproj" />
   </ItemGroup>
 
 </Project>
