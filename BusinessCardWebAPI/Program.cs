@@ -11,14 +11,15 @@ namespace BusinessCardWebAPI
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            var ConnectionString = builder.Configuration.GetConnectionString("BusinessCardDbConnectionString");
-            if (ConnectionString == null)
+            var connectionString = builder.Configuration.GetConnectionString("BusinessCardDbConnectionString");
+
+            if (connectionString == null)
             {
                 Console.WriteLine("Connection string not found.");
             }
             else
             {
-                using (var connection = new SqlConnection(ConnectionString))
+                using (var connection = new SqlConnection(connectionString))
                 {
                     try
                     {
@@ -37,9 +38,9 @@ namespace BusinessCardWebAPI
 
             // Add services to the container.
 
-            builder.Services.AddDbContext<BusinessCardDbContext>(option =>
+            builder.Services.AddDbContext<BusinessCardDbContext>(options =>
             {
-                option.UseSqlServer(ConnectionString);
+                options.UseSqlServer(connectionString);
             });
 
             builder.Services.AddControllers();
