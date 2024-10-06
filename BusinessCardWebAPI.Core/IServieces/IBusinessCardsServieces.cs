@@ -1,4 +1,5 @@
-﻿using BusinessCardWebAPI.Core.IReposetory;
+﻿using BusinessCardWebAPI.Core.Data;
+using BusinessCardWebAPI.Core.IReposetory;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,5 +10,6 @@ namespace BusinessCardWebAPI.Core.IServieces
 {
     public interface IBusinessCardsServieces:IBusinessCardsReposetory
     {
+      
     }
 }

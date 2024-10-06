@@ -6,6 +6,9 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using BusinessCardWebAPI.Core.Data;
+using BusinessCardWebAPI.Core.IServieces;
+using AutoMapper;
+using BusinessCardWebAPI.Core.DTO;
 
 namespace BusinessCardWebAPI.Controllers
 {
@@ -14,60 +17,72 @@ namespace BusinessCardWebAPI.Controllers
     public class BusinessCardsController : ControllerBase
     {
         private readonly BusinessCardDbContext _context;
+        private readonly IBusinessCardsServieces _businessCardsServieces;
+        private readonly IMapper _mapper;
 
-        public BusinessCardsController(BusinessCardDbContext context)
+        public BusinessCardsController(BusinessCardDbContext context,IBusinessCardsServieces businessCardsServieces,IMapper mapper)
         {
             _context = context;
+            _businessCardsServieces = businessCardsServieces;
+            _mapper = mapper;   
         }
 
         // GET: api/BusinessCards
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<BusinessCards>>> GetBusinessCards()
+        public async Task<ActionResult<IEnumerable<GetBusinessCardsDto>>> GetBusinessCards()
         {
           if (_context.BusinessCards == null)
           {
               return NotFound();
           }
-            return await _context.BusinessCards.ToListAsync();
+            var businessCards = await _businessCardsServieces.GetAllAsync();
+            var record = _mapper.Map<List<GetBusinessCardsDto>>(businessCards);
+            return record ;
         }
 
         // GET: api/BusinessCards/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<BusinessCards>> GetBusinessCards(int id)
+        public async Task<ActionResult<GetBusinessCardsDto>> GetBusinessCards(int id)
         {
-          if (_context.BusinessCards == null)
+          if (id <= 0)
           {
-              return NotFound();
-          }
-            var businessCards = await _context.BusinessCards.FindAsync(id);
-
+                return BadRequest("Invalid Id");
+            }
+            var businessCards = await _businessCardsServieces.GetAsync(id);
+            
             if (businessCards == null)
             {
                 return NotFound();
             }
+            var record = _mapper.Map<GetBusinessCardsDto>(businessCards);
 
-            return businessCards;
+            return record;
         }
 
         // PUT: api/BusinessCards/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutBusinessCards(int id, BusinessCards businessCards)
+        public async Task<IActionResult> PutBusinessCards(int id, UpdateBusinessCardsDto updateBusinessCardsDto)
         {
-            if (id != businessCards.Id)
+            if (id != updateBusinessCardsDto.Id)
             {
-                return BadRequest();
+                return BadRequest("Recored Not Exist");
             }
 
-            _context.Entry(businessCards).State = EntityState.Modified;
+            var businessCards = await _businessCardsServieces.GetAsync(id);
+            if (businessCards == null)
+            {
+                return NotFound("Does Not Exist");
+            }
+            _mapper.Map(updateBusinessCardsDto, businessCards);
 
             try
             {
-                await _context.SaveChangesAsync();
+                await _businessCardsServieces.UpdateAsync(businessCards);
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!BusinessCardsExists(id))
+                if (! await BusinessCardsExists(id))
                 {
                     return NotFound();
                 }
@@ -77,19 +92,20 @@ namespace BusinessCardWebAPI.Controllers
                 }
             }
 
-            return NoContent();
+            return Ok(businessCards);
         }
 
         // POST: api/BusinessCards
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<BusinessCards>> PostBusinessCards(BusinessCards businessCards)
+        public async Task<ActionResult<BusinessCards>> PostBusinessCards(CreateBusinessCardsDto createBusinessCardsDto)
         {
-          if (_context.BusinessCards == null)
-          {
-              return Problem("Entity set 'BusinessCardDbContext.BusinessCards'  is null.");
-          }
-            _context.BusinessCards.Add(businessCards);
+            if (createBusinessCardsDto == null)
+            {
+                return Problem("CreateBusinessCardsDto cannot be null.");
+            }
+            var businessCards= _mapper.Map<BusinessCards>(createBusinessCardsDto);
+            await _businessCardsServieces.AddAsync(businessCards);
             await _context.SaveChangesAsync();
 
             return CreatedAtAction("GetBusinessCards", new { id = businessCards.Id }, businessCards);
@@ -99,25 +115,47 @@ namespace BusinessCardWebAPI.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteBusinessCards(int id)
         {
-            if (_context.BusinessCards == null)
+            if (id <= 0)
             {
-                return NotFound();
+                return BadRequest("Invalid Id");
             }
-            var businessCards = await _context.BusinessCards.FindAsync(id);
+            var businessCards = await _businessCardsServieces.GetAsync(id);
             if (businessCards == null)
             {
                 return NotFound();
             }
 
-            _context.BusinessCards.Remove(businessCards);
-            await _context.SaveChangesAsync();
+            await _businessCardsServieces.DeleteAsync(id);
 
             return NoContent();
         }
 
-        private bool BusinessCardsExists(int id)
+        private async Task<bool> BusinessCardsExists(int id)
         {
-            return (_context.BusinessCards?.Any(e => e.Id == id)).GetValueOrDefault();
+            
+            return await _businessCardsServieces.Exists(id) ;
+            
         }
+
+        [HttpGet("filter")]
+        public async Task<ActionResult<IEnumerable<GetBusinessCardsDto>>> GetFilteredBusinessCards(
+            [FromQuery] string? name,
+            [FromQuery] string? email,
+            [FromQuery] string? phone,
+            [FromQuery] string? gender,
+            [FromQuery] DateTime? dob)
+        {
+            var filteredCards = await _businessCardsServieces.FilterBusinessCards(
+                name, email, phone, gender, dob);
+
+            if (filteredCards == null || !filteredCards.Any())
+            {
+                return NotFound("No business cards match the specified criteria.");
+            }
+            var result = _mapper.Map<List<GetBusinessCardsDto>>(filteredCards);
+            return Ok(result);
+        }
+
+
     }
 }

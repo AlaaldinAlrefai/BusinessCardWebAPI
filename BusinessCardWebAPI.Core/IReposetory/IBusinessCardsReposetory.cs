@@ -1,4 +1,5 @@
 ﻿using BusinessCardWebAPI.Core.Data;
+using BusinessCardWebAPI.Core.DTO;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,5 +10,12 @@ namespace BusinessCardWebAPI.Core.IReposetory
 {
     public interface IBusinessCardsReposetory:IGenericRepository<BusinessCards>
     {
+        Task<IEnumerable<BusinessCards>> FilterBusinessCards(
+         string? name = null,
+         string? email = null,
+         string? phone = null,
+         string? gender = null,
+         DateTime? dob = null);
+
     }
 }
