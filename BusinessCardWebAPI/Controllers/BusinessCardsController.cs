@@ -9,6 +9,7 @@ using BusinessCardWebAPI.Core.Data;
 using BusinessCardWebAPI.Core.IServieces;
 using AutoMapper;
 using BusinessCardWebAPI.Core.DTO;
+using BusinessCardWebAPI.Infra.Servieces;
 
 namespace BusinessCardWebAPI.Controllers
 {
@@ -155,6 +156,65 @@ namespace BusinessCardWebAPI.Controllers
             var result = _mapper.Map<List<GetBusinessCardsDto>>(filteredCards);
             return Ok(result);
         }
+
+
+
+        [HttpPost("import")]
+        public async Task<IActionResult> ImportBusinessCards(IFormFile file)
+        {
+            if (file == null || file.Length == 0)
+            {
+                return BadRequest("No file uploaded or the file is empty.");
+            }
+
+            var fileExtension = Path.GetExtension(file.FileName).ToLower();
+            List<CreateBusinessCardsDto> importedBusinessCardsDtos = new();
+
+            using (var stream = new StreamReader(file.OpenReadStream()))
+            {
+                switch (fileExtension)
+                {
+                    case ".csv":
+                        importedBusinessCardsDtos = await _businessCardsServieces.ImportFromCsvAsync(stream);
+                        break;
+                    case ".xml":
+                        importedBusinessCardsDtos = await _businessCardsServieces.ImportFromXmlAsync(stream);
+                        break;
+                    default:
+                        return BadRequest("Unsupported file format. Please upload a CSV or XML file.");
+                }
+            }
+
+            // Convert DTOs to Entities
+            var businessCards = importedBusinessCardsDtos
+                .Select(dto => new BusinessCards
+                {
+                    Name = dto.Name,
+                    Gender = dto.Gender,
+                    DateOfBirth = dto.DateOfBirth,
+                    Email = dto.Email,
+                    Phone = dto.Phone,
+                    Photo = dto.Photo,
+                    Address = dto.Address,
+                    Notes = dto.Notes,
+                    CreatedAt = DateTime.Now,
+                    UpdatedAt = DateTime.Now,
+                    UserId = dto.UserId
+                })
+                .ToList();
+
+            if (businessCards.Count > 0)
+            {
+                // Ensure this method accepts IEnumerable<BusinessCards>
+                await _businessCardsServieces.AddRangeAsync(businessCards);
+                await _context.SaveChangesAsync(); // Save all changes to the database
+            }
+
+            return Ok($"{importedBusinessCardsDtos.Count} business cards imported successfully.");
+        }
+
+
+
 
 
     }

@@ -17,5 +17,9 @@ namespace BusinessCardWebAPI.Core.IReposetory
          string? gender = null,
          DateTime? dob = null);
 
+
+        // New methods for file imports
+        Task<List<CreateBusinessCardsDto>> ImportFromCsvAsync(StreamReader stream);
+        Task<List<CreateBusinessCardsDto>> ImportFromXmlAsync(StreamReader stream);
     }
 }
