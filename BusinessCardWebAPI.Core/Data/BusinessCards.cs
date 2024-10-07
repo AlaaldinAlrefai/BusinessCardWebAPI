@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 
 namespace BusinessCardWebAPI.Core.Data
 {
+    
     public class BusinessCards
     {
         [Key]

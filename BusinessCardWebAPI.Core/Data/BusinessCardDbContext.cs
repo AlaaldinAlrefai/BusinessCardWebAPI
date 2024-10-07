@@ -40,8 +40,13 @@ namespace BusinessCardWebAPI.Core.Data
         public DbSet<ImportLogs> ImportLogs { get; set; }
         public DbSet<ExportLogs> ExportLogs { get; set; }
 
+        //protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        //{
+        //    optionsBuilder.UseSqlServer("your_connection_string")
+        //                  .LogTo(Console.WriteLine, LogLevel.Information);
+        //}
 
-       
+
 
 
     }
