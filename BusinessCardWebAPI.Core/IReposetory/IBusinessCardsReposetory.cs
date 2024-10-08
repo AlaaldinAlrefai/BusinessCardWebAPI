@@ -1,5 +1,6 @@
 ﻿using BusinessCardWebAPI.Core.Data;
 using BusinessCardWebAPI.Core.DTO;
+using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,9 +18,5 @@ namespace BusinessCardWebAPI.Core.IReposetory
          string? gender = null,
          DateTime? dob = null);
 
-
-        // New methods for file imports
-        Task<List<CreateBusinessCardsDto>> ImportFromCsvAsync(StreamReader stream);
-        Task<List<CreateBusinessCardsDto>> ImportFromXmlAsync(StreamReader stream);
     }
 }

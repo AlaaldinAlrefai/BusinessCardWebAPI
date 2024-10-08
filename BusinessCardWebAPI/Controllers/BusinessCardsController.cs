@@ -10,6 +10,8 @@ using BusinessCardWebAPI.Core.IServieces;
 using AutoMapper;
 using BusinessCardWebAPI.Core.DTO;
 using BusinessCardWebAPI.Infra.Servieces;
+using System.Text;
+using System.Xml.Serialization;
 
 namespace BusinessCardWebAPI.Controllers
 {
@@ -215,7 +217,21 @@ namespace BusinessCardWebAPI.Controllers
 
 
 
+        // Export Business Cards to CSV
+        [HttpGet("export/csv")]
+        public async Task<IActionResult> ExportToCsv()
+        {
+            var csvBytes = await _businessCardsServieces.ExportToCsvAsync();
+            return File(csvBytes, "text/csv", "BusinessCards.csv");
+        }
 
+        // Export Business Cards to XML
+        [HttpGet("export/xml")]
+        public async Task<IActionResult> ExportToXml()
+        {
+            var xmlBytes = await _businessCardsServieces.ExportToXmlAsync();
+            return File(xmlBytes, "application/xml", "BusinessCards.xml");
+        }
 
     }
 }
