@@ -4,6 +4,7 @@ using BusinessCardWebAPI.Core.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BusinessCardWebAPI.Core.Migrations
 {
     [DbContext(typeof(BusinessCardDbContext))]
-    partial class BusinessCardDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241009183542_UpdateTableinDatabase")]
+    partial class UpdateTableinDatabase
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

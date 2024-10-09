@@ -19,15 +19,15 @@ namespace BusinessCardWebAPI.Controllers
     [ApiController]
     public class BusinessCardsController : ControllerBase
     {
-        private readonly BusinessCardDbContext _context;
-        private readonly IBusinessCardsServieces _businessCardsServieces;
         private readonly IMapper _mapper;
+        private readonly IBusinessCardsServieces _businessCardsServieces;
+        private readonly BusinessCardDbContext _context;
 
-        public BusinessCardsController(BusinessCardDbContext context,IBusinessCardsServieces businessCardsServieces,IMapper mapper)
+        public BusinessCardsController(IMapper mapper, IBusinessCardsServieces businessCardsServieces, BusinessCardDbContext context)
         {
-            _context = context;
-            _businessCardsServieces = businessCardsServieces;
-            _mapper = mapper;   
+            _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
+            _businessCardsServieces = businessCardsServieces ?? throw new ArgumentNullException(nameof(businessCardsServieces));
+            _context = context ?? throw new ArgumentNullException(nameof(context));
         }
 
         // GET: api/BusinessCards
@@ -108,10 +108,10 @@ namespace BusinessCardWebAPI.Controllers
                 return Problem("CreateBusinessCardsDto cannot be null.");
             }
             var businessCards= _mapper.Map<BusinessCards>(createBusinessCardsDto);
-            await _businessCardsServieces.AddAsync(businessCards);
+            var createdBusinessCard = await _businessCardsServieces.AddAsync(businessCards);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetBusinessCards", new { id = businessCards.Id }, businessCards);
+            return CreatedAtAction("GetBusinessCards", new { id = businessCards.Id }, createdBusinessCard);
         }
 
         // DELETE: api/BusinessCards/5
