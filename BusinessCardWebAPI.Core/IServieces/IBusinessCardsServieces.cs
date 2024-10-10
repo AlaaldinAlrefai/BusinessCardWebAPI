@@ -17,7 +17,7 @@ namespace BusinessCardWebAPI.Core.IServieces
         // New methods for file imports Csv,Xml 
         Task<List<CreateBusinessCardsDto>> ImportFromCsvAsync(StreamReader stream);
         Task<List<CreateBusinessCardsDto>> ImportFromXmlAsync(StreamReader stream);
-
+        //
         // New methods for file Exports Csv,Xml 
         Task<byte[]> ExportToCsvAsync();
         Task<byte[]> ExportToXmlAsync();
