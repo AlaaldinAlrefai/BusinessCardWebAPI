@@ -11,7 +11,7 @@ namespace BusinessCardWebAPI.Core.IReposetory
 {
     public interface IBusinessCardsReposetory:IGenericRepository<BusinessCards>
     {
-        
+        //
         Task<IEnumerable<BusinessCards>> FilterBusinessCards(
          string? name = null,
          string? email = null,
