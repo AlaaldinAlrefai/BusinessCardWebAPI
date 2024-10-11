@@ -12,6 +12,7 @@ using BusinessCardWebAPI.Core.DTO;
 using BusinessCardWebAPI.Infra.Servieces;
 using System.Text;
 using System.Xml.Serialization;
+using Newtonsoft.Json;
 
 namespace BusinessCardWebAPI.Controllers
 {
@@ -31,17 +32,107 @@ namespace BusinessCardWebAPI.Controllers
         }
 
         // GET: api/BusinessCards
+        //[HttpGet]
+        //public async Task<ActionResult<IEnumerable<GetBusinessCardsDto>>> GetBusinessCards()
+        //{
+
+        //    try
+        //    {
+        //        var businessCards = await _businessCardsServieces.GetAllAsync();
+
+        //        // Log the business cards retrieved for debugging
+        //        Console.WriteLine("Business Cards Retrieved: " + JsonConvert.SerializeObject(businessCards));
+
+        //        if (businessCards == null || !businessCards.Any())
+        //        {
+        //            Console.WriteLine("No business cards found.");
+        //            return Ok(new List<GetBusinessCardsDto>()); // Avoid returning null
+        //        }
+
+        //        var dto = _mapper.Map<List<GetBusinessCardsDto>>(businessCards);
+        //        return Ok(dto);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        // Log the exception if necessary
+        //        return StatusCode(500, $"Internal server error: {ex.Message}");
+        //    }
+
+        //}
+
+
+
+
+
+
+        //[HttpGet]
+        //public async Task<ActionResult<IEnumerable<GetBusinessCardsDto>>> GetBusinessCards()
+        //{
+        //    try
+        //    {
+        //        var businessCards = await _businessCardsServieces.GetAllAsync();
+        //        Console.WriteLine("Business Cards Retrieved: " + JsonConvert.SerializeObject(businessCards));
+
+        //        if (businessCards == null || !businessCards.Any())
+        //        {
+        //            Console.WriteLine("No business cards found.");
+        //            return Ok(new List<GetBusinessCardsDto>());
+        //        }
+
+        //        var dto = _mapper.Map<List<GetBusinessCardsDto>>(businessCards);
+        //        return Ok(dto);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        Console.WriteLine("Exception in GetBusinessCards: " + ex.Message);
+        //        return StatusCode(500, $"Internal server error: {ex.Message}");
+        //    }
+        //}
+
+
+        //public async Task<ActionResult<IEnumerable<GetBusinessCardsDto>>> GetBusinessCards()
+        //{
+        //    try
+        //    {
+        //        var businessCards = await _businessCardsServieces.GetAllAsync();
+
+        //        if (businessCards == null || !businessCards.Any())
+        //        {
+        //            return Ok(new List<GetBusinessCardsDto>());
+        //        }
+
+        //        var dto = _mapper.Map<List<GetBusinessCardsDto>>(businessCards);
+        //        return Ok(dto);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return StatusCode(500, $"Internal server error: {ex.Message}");
+        //    }
+        //}
+
         [HttpGet]
         public async Task<ActionResult<IEnumerable<GetBusinessCardsDto>>> GetBusinessCards()
         {
-          if (_context.BusinessCards == null)
-          {
-              return NotFound();
-          }
-            var businessCards = await _businessCardsServieces.GetAllAsync();
-            var record = _mapper.Map<List<GetBusinessCardsDto>>(businessCards);
-            return record ;
+            try
+            {
+                var businessCards = await _businessCardsServieces.GetAllAsync();
+                if (businessCards == null || !businessCards.Any())
+                {
+                    return Ok(new List<GetBusinessCardsDto>()); // Return an empty list if no cards found
+                }
+
+                var dto = _mapper.Map<List<GetBusinessCardsDto>>(businessCards);
+                return Ok(dto);
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, "Internal server error");
+            }
         }
+
+
+
+
 
         // GET: api/BusinessCards/5
         [HttpGet("{id}")]
@@ -161,6 +252,8 @@ namespace BusinessCardWebAPI.Controllers
 
 
 
+
+
         [HttpPost("import")]
         public async Task<IActionResult> ImportBusinessCards(IFormFile file)
         {
@@ -172,58 +265,91 @@ namespace BusinessCardWebAPI.Controllers
             var fileExtension = Path.GetExtension(file.FileName).ToLower();
             List<CreateBusinessCardsDto> importedBusinessCardsDtos = new();
 
-            using (var stream = new StreamReader(file.OpenReadStream()))
+            try
             {
-                switch (fileExtension)
+                using (var stream = new StreamReader(file.OpenReadStream()))
                 {
-                    case ".csv":
-                        importedBusinessCardsDtos = await _businessCardsServieces.ImportFromCsvAsync(stream);
-                        break;
-                    case ".xml":
-                        importedBusinessCardsDtos = await _businessCardsServieces.ImportFromXmlAsync(stream);
-                        break;
-                    default:
-                        return BadRequest("Unsupported file format. Please upload a CSV or XML file.");
+                    switch (fileExtension)
+                    {
+                        case ".csv":
+                            importedBusinessCardsDtos = await _businessCardsServieces.ImportFromCsvAsync(stream);
+                            break;
+                        case ".xml":
+                            importedBusinessCardsDtos = await _businessCardsServieces.ImportFromXmlAsync(stream);
+                            break;
+                        default:
+                            return BadRequest("Unsupported file format. Please upload a CSV or XML file.");
+                    }
                 }
-            }
 
-            // Convert DTOs to Entities
-            var businessCards = importedBusinessCardsDtos
-                .Select(dto => new BusinessCards
+                // Check if any business cards were imported
+                if (importedBusinessCardsDtos.Count == 0)
                 {
-                    Name = dto.Name,
-                    Gender = dto.Gender,
-                    DateOfBirth = dto.DateOfBirth,
-                    Email = dto.Email,
-                    Phone = dto.Phone,
-                    Photo = dto.Photo,
-                    Address = dto.Address,
-                    Notes = dto.Notes,
-                    CreatedAt = DateTime.Now,
-                    UpdatedAt = DateTime.Now,
-                    UserId = dto.UserId
-                })
-                .ToList();
+                    return BadRequest("No business cards found in the file."); // Return bad request if no records
+                }
 
-            if (businessCards.Count > 0)
-            {
-                // Ensure this method accepts IEnumerable<BusinessCards>
-                await _businessCardsServieces.AddRangeAsync(businessCards);
-                await _context.SaveChangesAsync(); // Save all changes to the database
+                // Convert DTOs to Entities
+                var businessCards = importedBusinessCardsDtos
+                    .Select(dto => new BusinessCards
+                    {
+                        Name = dto.Name,
+                        Gender = dto.Gender,
+                        DateOfBirth = dto.DateOfBirth,
+                        Email = dto.Email,
+                        Phone = dto.Phone,
+                        Photo = dto.Photo,
+                        Address = dto.Address,
+                        Notes = dto.Notes,
+                        CreatedAt = DateTime.Now,
+                        UpdatedAt = DateTime.Now,
+                        UserId = dto.UserId
+                    })
+                    .ToList();
+
+                // Save only if there are valid business cards to save
+                if (businessCards.Count > 0)
+                {
+                    await _businessCardsServieces.AddRangeAsync(businessCards);
+                    await _context.SaveChangesAsync(); // Save all changes to the database
+                }
+
+                return Ok($"{importedBusinessCardsDtos.Count} business cards imported successfully.");
             }
-
-            return Ok($"{importedBusinessCardsDtos.Count} business cards imported successfully.");
+            catch (Exception ex)
+            {
+                // Log the exception if necessary (e.g., to a logging framework)
+                return StatusCode(500, "An error occurred while processing the file. Please try again later.");
+            }
         }
+
 
 
 
         // Export Business Cards to CSV
+        //[HttpGet("export/csv")]
+        //public async Task<IActionResult> ExportToCsv()
+        //{
+        //    var csvBytes = await _businessCardsServieces.ExportToCsvAsync();
+        //    return File(csvBytes, "text/csv", "BusinessCards.csv");
+        //}
+
+
         [HttpGet("export/csv")]
         public async Task<IActionResult> ExportToCsv()
         {
-            var csvBytes = await _businessCardsServieces.ExportToCsvAsync();
-            return File(csvBytes, "text/csv", "BusinessCards.csv");
+            try
+            {
+                var csvBytes = await _businessCardsServieces.ExportToCsvAsync();
+                return File(csvBytes, "text/csv", "BusinessCards.csv");
+            }
+            catch
+            {
+                // Return a status code without an object
+                return StatusCode(StatusCodes.Status500InternalServerError);
+            }
         }
+
+
 
         // Export Business Cards to XML
         [HttpGet("export/xml")]
