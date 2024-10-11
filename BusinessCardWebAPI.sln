@@ -1,0 +1,50 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.4.33103.184
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BusinessCardWebAPI", "BusinessCardWebAPI\BusinessCardWebAPI.csproj", "{6C56336B-EF2C-45B9-B2DB-FE0EF4D5E505}"
+	ProjectSection(ProjectDependencies) = postProject
+		{8B36C27A-34FA-4EB4-891F-B7A996B5A212} = {8B36C27A-34FA-4EB4-891F-B7A996B5A212}
+		{C14B3088-FEC8-4B7C-A52B-B279D7A96763} = {C14B3088-FEC8-4B7C-A52B-B279D7A96763}
+	EndProjectSection
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BusinessCardWebAPI.Core", "BusinessCardWebAPI.Core\BusinessCardWebAPI.Core.csproj", "{8B36C27A-34FA-4EB4-891F-B7A996B5A212}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BusinessCardWebAPI.Infra", "BusinessCardWebAPI.Infra\BusinessCardWebAPI.Infra.csproj", "{C14B3088-FEC8-4B7C-A52B-B279D7A96763}"
+	ProjectSection(ProjectDependencies) = postProject
+		{8B36C27A-34FA-4EB4-891F-B7A996B5A212} = {8B36C27A-34FA-4EB4-891F-B7A996B5A212}
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BusinessCardWebAPI.Tests", "BusinessCardWebAPI.Tests\BusinessCardWebAPI.Tests.csproj", "{A0A0C09E-1DAB-42E2-8BBB-81A8C5E2CAAB}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{6C56336B-EF2C-45B9-B2DB-FE0EF4D5E505}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6C56336B-EF2C-45B9-B2DB-FE0EF4D5E505}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6C56336B-EF2C-45B9-B2DB-FE0EF4D5E505}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6C56336B-EF2C-45B9-B2DB-FE0EF4D5E505}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8B36C27A-34FA-4EB4-891F-B7A996B5A212}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8B36C27A-34FA-4EB4-891F-B7A996B5A212}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8B36C27A-34FA-4EB4-891F-B7A996B5A212}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8B36C27A-34FA-4EB4-891F-B7A996B5A212}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C14B3088-FEC8-4B7C-A52B-B279D7A96763}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C14B3088-FEC8-4B7C-A52B-B279D7A96763}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C14B3088-FEC8-4B7C-A52B-B279D7A96763}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C14B3088-FEC8-4B7C-A52B-B279D7A96763}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A0A0C09E-1DAB-42E2-8BBB-81A8C5E2CAAB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A0A0C09E-1DAB-42E2-8BBB-81A8C5E2CAAB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A0A0C09E-1DAB-42E2-8BBB-81A8C5E2CAAB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A0A0C09E-1DAB-42E2-8BBB-81A8C5E2CAAB}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {11DA1D6E-C3C5-4499-9D54-AE8A619E42F7}
+	EndGlobalSection
+EndGlobal
