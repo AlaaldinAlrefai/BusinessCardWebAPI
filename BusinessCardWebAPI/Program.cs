@@ -53,6 +53,17 @@ namespace BusinessCardWebAPI
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
+            // CORS configuration added here
+            builder.Services.AddCors(corsOptions =>
+            {
+                corsOptions.AddPolicy("policy", builder =>
+                {
+                    builder.AllowAnyOrigin()
+                           .AllowAnyMethod()
+                           .AllowAnyHeader();
+                });
+            });
+
             builder.Services.AddAutoMapper(typeof(MapperConfig));
             builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
             builder.Services.AddScoped<IBusinessCardsReposetory, BusinessCardsReposetory>();
@@ -73,7 +84,7 @@ namespace BusinessCardWebAPI
 
 
             app.MapControllers();
-
+            app.UseCors("policy");
             app.Run();
         }
     }

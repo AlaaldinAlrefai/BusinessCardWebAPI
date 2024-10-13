@@ -313,7 +313,11 @@ namespace BusinessCardWebAPI.Controllers
                     await _context.SaveChangesAsync(); // Save all changes to the database
                 }
 
-                return Ok($"{importedBusinessCardsDtos.Count} business cards imported successfully.");
+                return Ok(new
+                {
+                    message = $"{importedBusinessCardsDtos.Count} business cards imported successfully.",
+                    businessCards = importedBusinessCardsDtos // Return the imported DTOs for preview on the frontend
+                });
             }
             catch (Exception ex)
             {
